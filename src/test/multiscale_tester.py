@@ -345,7 +345,7 @@ class MultiscaleTester(object):
         return info
 
     def encode(self, img_p, pout, overwrite=False):
-        pout_dir = os.path.dirname(os.path.abspath(pout))
+        # pout_dir = os.path.dirname(os.path.abspath(pout))
         # assert_exc(os.path.isdir(pout_dir), f'pout directory ({pout_dir}) does not exists!', EncodeError)
         if overwrite and os.path.isfile(pout):
             print(f'Removing {pout}...')
@@ -362,7 +362,7 @@ class MultiscaleTester(object):
         """
         Decode L3C-encoded file at `pin` to a PNG at `png_out_p`.
         """
-        pout_dir = os.path.dirname(os.path.abspath(png_out_p))
+        # pout_dir = os.path.dirname(os.path.abspath(png_out_p))
         # assert_exc(os.path.isdir(pout_dir), f'png_out_p directory ({pout_dir}) does not exists!', DecodeError)
         # assert_exc(png_out_p.endswith('.png'), f'png_out_p must end in .png, got {png_out_p}', DecodeError)
 

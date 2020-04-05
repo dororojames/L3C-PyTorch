@@ -20,7 +20,7 @@ import os
 
 import numpy as np
 import torch
-from fjcommon import functools_ext as ft
+# from fjcommon import functools_ext as ft
 
 import bitcoding.coders_helpers
 import pytorch_ext as pe
@@ -138,7 +138,7 @@ class Bitcoding(object):
             c_uniform = self._get_uniform_cdf(S.shape, dmll.L)
             for c in range(S.shape[1]):
                 S_c = S[:, c, ...].to(torch.int16)
-                encoded = r.range_encode(S_c, c_uniform, self.times)
+                encoded = r.range_encode(S_c, c_uniform)#, self.times
                 write_num_bytes_encoded(len(encoded), fout)
                 entropy_coding_bytes += len(encoded)
                 fout.write(encoded)
@@ -156,7 +156,7 @@ class Bitcoding(object):
             for c in range(C):
                 num_bytes = read_num_bytes_encoded(fin)
                 encoded = fin.read(num_bytes)
-                S_c = r.range_decode(encoded, c_uniform, self.times).reshape(1, H, W)
+                S_c = r.range_decode(encoded, c_uniform).reshape(1, H, W)#, self.times
                 S_c = S_c.to(pe.DEVICE)
                 S.append(S_c)
 
@@ -186,7 +186,7 @@ class Bitcoding(object):
         # in parallel for all channels
         def encoder(c, C_cur):
             S_c = S[:, c, ...].to(torch.int16)
-            encoded = r.range_encode(S_c, cdf=C_cur, time_logger=self.times)
+            encoded = r.range_encode(S_c, cdf=C_cur) #, time_logger=self.times
             write_num_bytes_encoded(len(encoded), fout)
             fout.write(encoded)
             # yielding always bottleneck and extra_info
@@ -213,7 +213,7 @@ class Bitcoding(object):
         def decoder(_, C_cur):
             num_bytes = read_num_bytes_encoded(fin)
             encoded = fin.read(num_bytes)
-            S_c = r.range_decode(encoded, cdf=C_cur, time_logger=self.times).reshape(1, H, W)
+            S_c = r.range_decode(encoded, cdf=C_cur).reshape(1, H, W) #, time_logger=self.times
             S_c = S_c.to(l.device, non_blocking=True)  # TODO: do directly in the extension
             bn_c = dmll.to_bn(S_c)
             # yielding always bottleneck and extra_info (=None here)

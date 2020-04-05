@@ -157,9 +157,9 @@ class DiscretizedMixLogisticLoss(torch.nn.Module):
         x, logit_pis, means, log_scales, K = self._extract_non_shared(x, l)
 
         # visualize pi, means, variances
-        self.summarizer.register_images(
-                'val', {f'dmll/{scale}/c{c}': lambda c=c: _visualize_params(logit_pis, means, log_scales, c)
-                        for c in range(x.shape[1])})
+        # self.summarizer.register_images(
+        #         'val', {f'dmll/{scale}/c{c}': lambda c=c: _visualize_params(logit_pis, means, log_scales, c)
+        #                 for c in range(x.shape[1])})
 
         centered_x = x - means  # NCKHW
 
@@ -207,7 +207,7 @@ class DiscretizedMixLogisticLoss(torch.nn.Module):
         return -log_sum_exp(log_probs_weighted, dim=2)  # NCHW
 
     def _extract_non_shared(self, x, l):
-        """
+        r"""
         :param x: targets, NCHW
         :param l: output of net, NKpHW, see above
         :return:
