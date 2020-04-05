@@ -24,8 +24,8 @@ import torch.nn.functional as F
 import torchvision
 
 import pytorch_ext as pe
-import vis.grid
-import vis.summarizable_module
+# import vis.grid
+# import vis.summarizable_module
 from helpers.pad import pad
 from modules.multiscale_network import MultiscaleNetwork, Out
 from vis import histogram_plotter, image_summaries
@@ -39,7 +39,7 @@ MultiscaleLoss = namedtuple(
 
 
 
-class MultiscaleBlueprint(vis.summarizable_module.SummarizableModule):
+class MultiscaleBlueprint(torch.nn.Module):
     def __init__(self, config_ms):
         super(MultiscaleBlueprint, self).__init__()
         net = MultiscaleNetwork(config_ms)

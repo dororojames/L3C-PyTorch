@@ -20,7 +20,7 @@ import glob
 from collections import namedtuple
 from datetime import datetime, timedelta
 
-import fasteners
+# import fasteners
 import re
 import os
 from os import path

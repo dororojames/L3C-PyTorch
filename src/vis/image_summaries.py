@@ -18,7 +18,7 @@ along with L3C-PyTorch.  If not, see <https://www.gnu.org/licenses/>.
 """
 import numpy as np
 import pytorch_ext as pe
-from fjcommon.assertions import assert_exc
+# from fjcommon.assertions import assert_exc
 
 
 def imshow(img):

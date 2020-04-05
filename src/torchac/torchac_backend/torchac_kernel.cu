@@ -120,7 +120,7 @@ void calculate_cdf(
     CHECK_CONTIGUOUS_AND_CUDA(logit_probs_softmax);
 
     AT_CHECK(means.sizes() == log_scales.sizes() &&
-             log_scales.sizes() == logit_probs_softmax.sizes())
+             log_scales.sizes() == logit_probs_softmax.sizes());
 
     const auto param_sizes = means.sizes();
     const auto N = param_sizes[2] * param_sizes[3];  // H * W
@@ -140,6 +140,3 @@ void calculate_cdf(
     // Wait for GPU to finish before accessing on host
     cudaDeviceSynchronize();
 }
-
-
-

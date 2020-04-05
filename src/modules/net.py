@@ -27,8 +27,8 @@ import torch
 from torch import nn
 
 import pytorch_ext as pe
-import vis.histogram_plot
-import vis.summarizable_module
+# import vis.histogram_plot
+# import vis.summarizable_module
 from dataloaders.images_loader import resize_bicubic_batch
 from modules import edsr
 from modules.quantizer import Quantizer
@@ -62,7 +62,7 @@ class Net(nn.Module):
         raise NotImplementedError()  # Call .enc and .dec directly
 
 
-class BicubicDownsamplingEnc(vis.summarizable_module.SummarizableModule):
+class BicubicDownsamplingEnc(torch.nn.Module):
     def __init__(self, *_):
         super(BicubicDownsamplingEnc, self).__init__()
         # TODO: ugly
@@ -86,7 +86,7 @@ def new_levels(L, initial_levels):
     return torch.tensor(levels, requires_grad=False)
 
 
-class EDSRLikeEnc(vis.summarizable_module.SummarizableModule):
+class EDSRLikeEnc(torch.nn.Module):
     def __init__(self, config_ms, scale):
         super(EDSRLikeEnc, self).__init__()
 

@@ -37,14 +37,15 @@ Flags read by this script:
     
 """
 
-import sys
+import os
 import re
 import subprocess
-from setuptools import setup
+import sys
 from distutils.version import LooseVersion
-from torch.utils.cpp_extension import CppExtension, BuildExtension, CUDAExtension
-import os
 
+from setuptools import setup
+from torch.utils.cpp_extension import (BuildExtension, CppExtension,
+                                       CUDAExtension)
 
 MODULE_BASE_NAME = 'torchac_backend'
 
@@ -55,6 +56,32 @@ def prefixed(prefix, l):
         if not os.path.isfile(p):
             raise FileNotFoundError(p)
     return ps
+
+# TODO:
+# Add further supported version as specified in readme
+
+
+def get_extension(cuda_support):
+    # dir of this file
+    setup_dir = os.path.dirname(os.path.realpath(__file__))
+    # Where the cpp and cu files are
+    prefix = os.path.join(setup_dir, MODULE_BASE_NAME)
+    if not os.path.isdir(prefix):
+        raise ValueError('Did not find backend folder: {}'.format(prefix))
+    if cuda_support:
+        nvcc_avaible, nvcc_version = supported_nvcc_available()
+        if not nvcc_avaible:
+            print(_bold_warn_str('***WARN') +
+                  ': Found untested nvcc {}'.format(nvcc_version))
+
+        return CUDAExtension(
+            MODULE_BASE_NAME + '_gpu',
+            prefixed(prefix, ['torchac.cpp', 'torchac_kernel.cu']),
+            define_macros=[('COMPILE_CUDA', '1')])
+    else:
+        return CppExtension(
+            MODULE_BASE_NAME + '_cpu',
+            prefixed(prefix, ['torchac.cpp']))
 
 
 def compile_ext(cuda_support):
@@ -68,50 +95,11 @@ def compile_ext(cuda_support):
           cmdclass={'build_ext': BuildExtension})
 
 
-def get_extension(cuda_support):
-    # dir of this file
-    setup_dir = os.path.dirname(os.path.realpath(__file__))
-    # Where the cpp and cu files are
-    prefix = os.path.join(setup_dir, MODULE_BASE_NAME)
-    if not os.path.isdir(prefix):
-        raise ValueError('Did not find backend foler: {}'.format(prefix))
-    if cuda_support:
-        nvcc_avaible, nvcc_version = supported_nvcc_available()
-        if not nvcc_avaible:
-            print(_bold_warn_str('***WARN') + ': Found untested nvcc {}'.format(nvcc_version))
-
-        return CUDAExtension(
-                MODULE_BASE_NAME + '_gpu',
-                prefixed(prefix, ['torchac.cpp', 'torchac_kernel.cu']),
-                define_macros=[('COMPILE_CUDA', '1')])
-    else:
-        return CppExtension(
-                MODULE_BASE_NAME + '_cpu',
-                prefixed(prefix, ['torchac.cpp']))
-
-
-# TODO:
-# Add further supported version as specified in readme
-
-
-
 def _supported_compilers_available():
     """
     To see an up-to-date list of tested combinations of GCC and NVCC, see the README
     """
     return _supported_gcc_available()[0] and supported_nvcc_available()[0]
-
-
-def _supported_gcc_available():
-    v = _get_version(['gcc', '-v'], r'version (.*?)\s+')
-    return LooseVersion('6.0') > LooseVersion(v) >= LooseVersion('5.0'), v
-
-
-def supported_nvcc_available():
-    v = _get_version(['nvcc', '-V'], 'release (.*?),')
-    if v is None:
-        return False, 'nvcc unavailable!'
-    return LooseVersion(v) >= LooseVersion('9.0'), v
 
 
 def _get_version(cmd, regex):
@@ -127,6 +115,18 @@ def _get_version(cmd, regex):
         return None
 
 
+def _supported_gcc_available():
+    v = _get_version(['gcc', '-v'], r'version (.*?)\s+')
+    return LooseVersion('6.0') > LooseVersion(v) >= LooseVersion('5.0'), v
+
+
+def supported_nvcc_available():
+    v = _get_version(['nvcc', '-V'], 'release (.*?),')
+    if v is None:
+        return False, 'nvcc unavailable!'
+    return LooseVersion(v) >= LooseVersion('9.0'), v
+
+
 def _bold_warn_str(s):
     return '\x1b[91m\x1b[1m' + s + '\x1b[0m'
 
@@ -135,14 +135,15 @@ def _assert_torch_version_sufficient():
     import torch
     if LooseVersion(torch.__version__) >= LooseVersion('1.0'):
         return
-    print(_bold_warn_str('Error:'), 'Need PyTorch version >= 1.0, found {}'.format(torch.__version__))
+    print(_bold_warn_str('Error:'),
+          'Need PyTorch version >= 1.0, found {}'.format(torch.__version__))
     sys.exit(1)
 
 
 def main():
     _assert_torch_version_sufficient()
 
-    cuda_flag = os.environ.get('COMPILE_CUDA', 'no')
+    cuda_flag = 'auto'  # os.environ.get('COMPILE_CUDA', 'no')
 
     if cuda_flag == 'auto':
         cuda_support = _supported_compilers_available()
@@ -152,7 +153,8 @@ def main():
     elif cuda_flag == 'no':
         cuda_support = False
     else:
-        raise ValueError('COMPILE_CUDA must be in (auto, force, no), got {}'.format(cuda_flag))
+        raise ValueError(
+            'COMPILE_CUDA must be in (auto, force, no), got {}'.format(cuda_flag))
 
     compile_ext(cuda_support)
 

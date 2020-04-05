@@ -39,10 +39,10 @@ from collections import namedtuple
 import torch
 import torch.nn.functional as F
 import torchvision
-from fjcommon import functools_ext as ft
+# from fjcommon import functools_ext as ft
 
-import vis.grid
-import vis.summarizable_module
+# import vis.grid
+# import vis.summarizable_module
 from modules import quantizer
 
 # Note that for RGB, we predict the parameters mu, sigma, pi and lambda. Since RGB has C==3 channels, it so happens that
@@ -84,7 +84,7 @@ def non_shared_get_K(Kp, C):
 # --------------------------------------------------------------------------------
 
 
-class DiscretizedMixLogisticLoss(vis.summarizable_module.SummarizableModule):
+class DiscretizedMixLogisticLoss(torch.nn.Module):
     def __init__(self, rgb_scale: bool, x_min=0, x_max=255, L=256):
         """
         :param rgb_scale: Whether this is the loss for the RGB scale. In that case,

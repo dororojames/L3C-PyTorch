@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with L3C-PyTorch.  If not, see <https://www.gnu.org/licenses/>.
 """
-from fjcommon import functools_ext as ft
+# from fjcommon import functools_ext as ft
 from torch.nn import functional as F
 
 

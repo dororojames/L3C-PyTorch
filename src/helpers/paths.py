@@ -24,7 +24,7 @@ from torchvision import transforms as transforms
 
 from helpers import logdir_helpers
 
-from fjcommon.assertions import assert_exc
+# from fjcommon.assertions import assert_exc
 
 import pytorch_ext as pe
 

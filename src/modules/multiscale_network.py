@@ -39,7 +39,7 @@ import torch
 from torch import nn
 
 import pytorch_ext as pe
-import vis.summarizable_module
+# import vis.summarizable_module
 from criterion.logistic_mixture import DiscretizedMixLogisticLoss
 from modules import edsr
 from helpers.global_config import global_config
@@ -130,7 +130,7 @@ class Out(object):
         return N*C*H*W*np.log(L)
 
 
-class Losses(vis.summarizable_module.SummarizableModule):
+class Losses(torch.nn.Module):
     def __init__(self, config_ms):
         super(Losses, self).__init__()
         self.loss_dmol_rgb = DiscretizedMixLogisticLoss(
@@ -165,7 +165,7 @@ class Losses(vis.summarizable_module.SummarizableModule):
         return costs, final_cost_uniform, num_subpixels
 
 
-class MultiscaleNetwork(vis.summarizable_module.SummarizableModule):
+class MultiscaleNetwork(torch.nn.Module):
     def __init__(self, config_ms):
         super(MultiscaleNetwork, self).__init__()
 

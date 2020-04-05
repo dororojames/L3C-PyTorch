@@ -22,8 +22,8 @@ import shutil
 from functools import total_ordering
 
 import numpy as np
-from fjcommon import os_ext
-from fjcommon.assertions import assert_exc
+# from fjcommon import os_ext
+# from fjcommon.assertions import assert_exc
 
 from helpers.paths import has_image_ext, img_name
 

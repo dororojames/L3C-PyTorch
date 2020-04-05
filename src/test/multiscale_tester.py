@@ -25,11 +25,11 @@ import shutil
 import time
 from contextlib import contextmanager
 
-import fasteners
+# import fasteners
 import numpy as np
 import torch
-from fjcommon import functools_ext as ft, config_parser, no_op
-from fjcommon.assertions import assert_exc
+# from fjcommon import functools_ext as ft, config_parser, no_op
+# from fjcommon.assertions import assert_exc
 from torchvision import transforms
 
 from blueprints.multiscale_blueprint import MultiscaleBlueprint
@@ -346,11 +346,11 @@ class MultiscaleTester(object):
 
     def encode(self, img_p, pout, overwrite=False):
         pout_dir = os.path.dirname(os.path.abspath(pout))
-        assert_exc(os.path.isdir(pout_dir), f'pout directory ({pout_dir}) does not exists!', EncodeError)
+        # assert_exc(os.path.isdir(pout_dir), f'pout directory ({pout_dir}) does not exists!', EncodeError)
         if overwrite and os.path.isfile(pout):
             print(f'Removing {pout}...')
             os.remove(pout)
-        assert_exc(not os.path.isfile(pout), f'{pout} exists. Consider --overwrite', EncodeError)
+        # assert_exc(not os.path.isfile(pout), f'{pout} exists. Consider --overwrite', EncodeError)
 
         img = self._read_img(img_p)
         img = img.to(pe.DEVICE)
@@ -363,8 +363,8 @@ class MultiscaleTester(object):
         Decode L3C-encoded file at `pin` to a PNG at `png_out_p`.
         """
         pout_dir = os.path.dirname(os.path.abspath(png_out_p))
-        assert_exc(os.path.isdir(pout_dir), f'png_out_p directory ({pout_dir}) does not exists!', DecodeError)
-        assert_exc(png_out_p.endswith('.png'), f'png_out_p must end in .png, got {png_out_p}', DecodeError)
+        # assert_exc(os.path.isdir(pout_dir), f'png_out_p directory ({pout_dir}) does not exists!', DecodeError)
+        # assert_exc(png_out_p.endswith('.png'), f'png_out_p must end in .png, got {png_out_p}', DecodeError)
 
         decoded = self.bc.decode(pin)
 
