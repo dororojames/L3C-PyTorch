@@ -29,7 +29,7 @@ import torch
 # The right version is then picked in the functions below.
 #
 # NOTE:
-# Without a clean build, multiple versions might be installed. You may use python seutp.py clean --all to prevent this.
+# Without a clean build, multiple versions might be installed. You may use python setup.py clean --all to prevent this.
 # But it should not be an issue.
 
 
