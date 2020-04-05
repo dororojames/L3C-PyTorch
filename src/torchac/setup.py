@@ -156,7 +156,7 @@ def main():
         raise ValueError(
             'COMPILE_CUDA must be in (auto, force, no), got {}'.format(cuda_flag))
 
-    compile_ext(cuda_support)
+    compile_ext(cuda_support=True)
 
 
 if __name__ == '__main__':
