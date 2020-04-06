@@ -27,7 +27,7 @@ from torchac import torchac
 
 
 from criterion.logistic_mixture import CDFOut
-from test.cuda_timer import StackTimeLogger
+# from test.cuda_timer import StackTimeLogger
 
 
 class ArithmeticCoder(object):

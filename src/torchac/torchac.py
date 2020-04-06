@@ -64,7 +64,7 @@ if not imported_at_least_one:
                       'See the README for details.')
 
 
-any_backend = torchac_backend_cpu if CPU_SUPPORTED else torchac_backend_gpu
+any_backend = torchac_backend_gpu if CUDA_SUPPORTED else torchac_backend_cpu
 
 
 # print(f'*** torchac: GPU support: {CUDA_SUPPORTED} // CPU support: {CPU_SUPPORTED}')
@@ -84,16 +84,16 @@ def _get_cpu_backend():
     return torchac_backend_cpu
 
 
-def encode_cdf(cdf, sym):
+def encode_cdf(cdf, symbols):
     """
     :param cdf: CDF as 1HWLp, as int16, on CPU!
-    :param sym: the symbols to encode, as int16, on CPU
+    :param symbols: the symbols to encode, as int16, on CPU
     :return: byte-string, encoding `sym`
     """
-    if cdf.is_cuda or sym.is_cuda:
+    if cdf.is_cuda or symbols.is_cuda:
         raise ValueError('CDF and symbols must be on CPU for `encode_cdf`')
     # encode_cdf is defined in both backends, so doesn't matter which one we use!
-    return any_backend.encode_cdf(cdf, sym)
+    return any_backend.encode_cdf(cdf, symbols)
 
 
 def decode_cdf(cdf, input_string):
@@ -110,7 +110,7 @@ def decode_cdf(cdf, input_string):
 
 def encode_logistic_mixture(
         targets, means, log_scales, logit_probs_softmax,  # CDF
-        sym):
+        symbols):
     """
     NOTE: This function uses either the CUDA or CPU backend, depending on the device of the input tensors.
     NOTE: targets, means, log_scales, logit_probs_softmax must all be on the same device (CPU or GPU)
@@ -121,21 +121,21 @@ def encode_logistic_mixture(
     :param means: means of mixtures, tensor of shape 1KHW, float32
     :param log_scales: log(scales) of mixtures, tensor of shape 1KHW, float32
     :param logit_probs_softmax: weights of the mixtures (PI), tensorf of shape 1KHW, float32
-    :param sym: the symbols to encode. MUST be on CPU!!
+    :param symbols: the symbols to encode. MUST be on CPU!!
     :return: byte-string, encoding `sym`.
     """
     if not (targets.is_cuda == means.is_cuda == log_scales.is_cuda == logit_probs_softmax.is_cuda):
         raise ValueError('targets, means, log_scales, logit_probs_softmax must all be on the same device! Got '
                          f'{targets.device}, {means.device}, {log_scales.device}, {logit_probs_softmax.device}.')
-    if sym.is_cuda:
+    if symbols.is_cuda:
         raise ValueError('sym must be on CPU!')
 
     if targets.is_cuda:
         return _get_gpu_backend().encode_logistic_mixture(
-                targets, means, log_scales, logit_probs_softmax, sym)
+                targets, means, log_scales, logit_probs_softmax, symbols)
     else:
         cdf = _get_uint16_cdf(logit_probs_softmax, targets, means, log_scales)
-        return encode_cdf(cdf, sym)
+        return encode_cdf(cdf, symbols)
 
 
 def decode_logistic_mixture(
